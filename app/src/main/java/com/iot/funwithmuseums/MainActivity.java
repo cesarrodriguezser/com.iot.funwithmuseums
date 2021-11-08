@@ -64,8 +64,8 @@ public class MainActivity extends AppCompatActivity implements ItemViewHolder.It
 
     Button bmyMuseums;
     Button bChart;
+    Button bNearMuseum;
 
-    TextView nMuseum;
     TextView tvLoadContent;
 
     String string_result;
@@ -82,7 +82,6 @@ public class MainActivity extends AppCompatActivity implements ItemViewHolder.It
     ViewModel myViewmodel;
 
     double distance = 1000000.0; //In km
-    double calculatedDistance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,7 +97,8 @@ public class MainActivity extends AppCompatActivity implements ItemViewHolder.It
         logTag = LOGSLOADWEBCONTENT + ", Thread = " + Thread.currentThread().getName() + ", Class = " +
                 this.getClass().getName().substring(this.getClass().getName().lastIndexOf(".") + 1);
 
-        nMuseum = findViewById(R.id.subtitle);
+        bNearMuseum = findViewById(R.id.subtitle);
+        bNearMuseum.setEnabled(false);
         bmyMuseums = findViewById(R.id.bMyMuseums);
         bChart = findViewById(R.id.bChart);
         tvLoadContent = findViewById(R.id.tvLoadContent);
@@ -169,23 +169,54 @@ public class MainActivity extends AppCompatActivity implements ItemViewHolder.It
 
     };
 
-    @Override
-    public void onItemClick(int position, View v) {
+    public void goToNearestMuseum(View view){
 
-        // Creating Intent For Navigating to Second Activity (Explicit Intent)
-        Intent i = new Intent(MainActivity.this,MapsActivity.class);
+        int position = 0;
+
+        //Calculate the position in the listofitems array where the nearest museum is
+
+        for(int i=0; i < listOfItems.size(); i++){
+
+            if(listOfItems.get(i).getDisplayText().equals(nearestMuseum)){
+                position = i;
+            }
+        }
+
+        // Creating Intent For Navigating to Maps Activity (Explicit Intent)
+        Intent i = new Intent(MainActivity.this, MapsActivity.class);
 
         Item museum = listOfItems.get(position);
 
-        getDistance(museum.getLocation());
+        double calculatedDistance = getDistance(museum.getLocation());
 
-        // Adding values to the intent to pass them to Second Activity
+        // Adding values to the intent to pass them to Maps Activity
         i.putExtra("museumName", String.valueOf(museum.getDisplayText()));
         i.putExtra("location", String.valueOf(museum.getLocation()));
         i.putExtra("distance", String.valueOf(calculatedDistance));
         i.putExtra("currentLocation", String.valueOf(currentLocation));
 
-        // Once the intent is parametrized, start the second activity:
+        // Once the intent is parametrized, start the Maps Activity:
+        startActivity(i);
+
+    }
+
+    @Override
+    public void onItemClick(int position, View v) {
+
+        // Creating Intent For Navigating to Maps Activity (Explicit Intent)
+        Intent i = new Intent(MainActivity.this, MapsActivity.class);
+
+        Item museum = listOfItems.get(position);
+
+        double calculatedDistance = getDistance(museum.getLocation());
+
+        // Adding values to the intent to pass them to Maps Activity
+        i.putExtra("museumName", String.valueOf(museum.getDisplayText()));
+        i.putExtra("location", String.valueOf(museum.getLocation()));
+        i.putExtra("distance", String.valueOf(calculatedDistance));
+        i.putExtra("currentLocation", String.valueOf(currentLocation));
+
+        // Once the intent is parametrized, start the Maps Activity:
         startActivity(i);
     }
 
@@ -220,7 +251,7 @@ public class MainActivity extends AppCompatActivity implements ItemViewHolder.It
 
                     myViewmodel.InsertItem(item);
 
-                    getDistance(item.getLocation());
+                    double calculatedDistance = getDistance(item.getLocation());
 
                     if(calculatedDistance < distance){
                         distance = calculatedDistance;
@@ -239,7 +270,7 @@ public class MainActivity extends AppCompatActivity implements ItemViewHolder.It
         }
 
         tvLoadContent.setText(""); // Inform the user by means of the TextView
-        nMuseum.setText(nearestMuseum);
+        bNearMuseum.setText(nearestMuseum);
 
     }
 
@@ -277,7 +308,7 @@ public class MainActivity extends AppCompatActivity implements ItemViewHolder.It
         locationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
     }
 
-    private void getDistance(LatLng location){
+    private double getDistance(LatLng location){
 
         double lat1, lon1, lat0, lon0, difLat, difLon, a, c;
 
@@ -297,7 +328,8 @@ public class MainActivity extends AppCompatActivity implements ItemViewHolder.It
 
         c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 
-        calculatedDistance = 6371000 * c; //In metres
+        double calculatedDistance = 6371000 * c; //In metres
+        return calculatedDistance;
     }
 
     @Override
