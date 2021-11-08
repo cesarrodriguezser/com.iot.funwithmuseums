@@ -3,19 +3,25 @@ package com.iot.funwithmuseums;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -28,15 +34,18 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
+import com.iot.funwithmuseums.database.ViewModel;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -46,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements ItemViewHolder.It
     private String logTag; // to clearly identify logs
     private static final String URL_MUSEUMS = "https://datos.madrid.es/portal/site/egob/menuitem.ac61933d6ee3c31cae77ae7784f1a5a0/?vgnextoid=00149033f2201410VgnVCM100000171f5a0aRCRD&format=json&file=0&filename=201132-0-museos&mgmtid=118f2fdbecc63410VgnVCM1000000b205a0aRCRD&preview=full";
     private static final String CONTENT_TYPE_JSON = "application/json";
-    private static final List<Item> listOfItems = new ArrayList<>();
+    private static List<Item> listOfItems = new ArrayList<>();
 
     private RecyclerView myRecycleView;
     private ItemAdapter myAdapter;
@@ -70,6 +79,8 @@ public class MainActivity extends AppCompatActivity implements ItemViewHolder.It
 
     String nearestMuseum;
 
+    ViewModel myViewmodel;
+
     double distance = 1000000.0; //In km
     double calculatedDistance;
 
@@ -77,6 +88,8 @@ public class MainActivity extends AppCompatActivity implements ItemViewHolder.It
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        myViewmodel = ViewModelProviders.of(this).get(ViewModel.class);
 
         listOfItems.clear();
         museumNames_ArrayList.clear();
@@ -94,6 +107,16 @@ public class MainActivity extends AppCompatActivity implements ItemViewHolder.It
         myAdapter = new ItemAdapter(listOfItems, this);
         myRecycleView.setAdapter(myAdapter);
         myRecycleView.setLayoutManager(new LinearLayoutManager(this));
+
+        myViewmodel.getAllItems().observe(this, new Observer<List<Item>>() {
+            @Override
+            public void onChanged(List<Item> items) {
+                listOfItems.clear();
+                listOfItems.addAll(items);
+                myAdapter.notifyDataSetChanged();
+                myRecycleView.invalidate();
+            }
+        });
 
         // Create an executor for the background tasks:
         es = Executors.newSingleThreadExecutor();
@@ -116,12 +139,19 @@ public class MainActivity extends AppCompatActivity implements ItemViewHolder.It
                     }
                 }
         );
-
+        bChart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent chartgo= new Intent(MainActivity.this, ChartActivity.class);
+                startActivity(chartgo);
+            }
+        });
         getCurrentLocation();
     }
 
     // Define the handler that will receive the messages from the background thread:
     Handler handler = new Handler(Looper.getMainLooper()) {
+        @RequiresApi(api = Build.VERSION_CODES.N)
         @Override
         public void handleMessage(@NonNull Message msg) {
             // message received from background thread: load complete (or failure)
@@ -129,9 +159,14 @@ public class MainActivity extends AppCompatActivity implements ItemViewHolder.It
             Log.d(logTag, "message received from background thread");
             if((string_result = msg.getData().getString("text")) != null) {
                 //tvLoadContent.setText(string_result);
+                SharedPreferences sharedPreferences = getSharedPreferences("JSON",MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("file",string_result);
+                editor.commit();
                 parsingJSON(string_result);
             }
         }
+
     };
 
     @Override
@@ -154,6 +189,7 @@ public class MainActivity extends AppCompatActivity implements ItemViewHolder.It
         startActivity(i);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public void parsingJSON(String parsing) {
 
         try {
@@ -175,14 +211,16 @@ public class MainActivity extends AppCompatActivity implements ItemViewHolder.It
 
                     JSONObject locationNode = eachMuseum.getJSONObject("location");
 
-                    location = new LatLng(
 
-                            locationNode.getDouble("latitude"),
+                    Item item = new Item();
+                    item.setDisplayText(museumName);
+                    item.setId(Integer.parseInt(eachMuseum.getString("id")));
+                    item.setLocation(locationNode.getDouble("latitude"),
                             locationNode.getDouble("longitude"));
 
-                    listOfItems.add(new Item(museumName, location));
+                    myViewmodel.InsertItem(item);
 
-                    getDistance(location);
+                    getDistance(item.getLocation());
 
                     if(calculatedDistance < distance){
                         distance = calculatedDistance;
