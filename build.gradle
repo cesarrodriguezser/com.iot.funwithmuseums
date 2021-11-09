@@ -3,6 +3,9 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        maven{
+            url 'https://dl.bintray.com/supercoffee/maven/'
+        }
     }
     dependencies {
         classpath "com.android.tools.build:gradle:4.2.2"

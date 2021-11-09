@@ -12,16 +12,20 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import com.iot.funwithmuseums.databinding.ActivityMapsBinding;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, RadioGroup.OnCheckedChangeListener {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, RadioGroup.OnCheckedChangeListener, GoogleMap.OnInfoWindowClickListener {
 
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
     Intent inputIntent;
     String name, lat, lon, distance, currentLocation, cLat, cLon;
+
+    Marker museumMarker;
+    Marker currentLocMarker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,10 +70,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Add a marker in the museum selected and move the camera
         LatLng museum = new LatLng(Double.valueOf(lat), Double.valueOf(lon));
         LatLng cLocation = new LatLng(Double.valueOf(cLat), Double.valueOf(cLon));
-        mMap.addMarker(new MarkerOptions().position(museum).title(name + ", " + distance.substring(0, 6) + "m"));
-        mMap.addMarker(new MarkerOptions().position(cLocation).title("Current Location").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+        museumMarker = mMap.addMarker(new MarkerOptions().position(museum).title(name).snippet(distance.substring(0, 7) + "m ->Click here to start the visit<-"));
+        currentLocMarker = mMap.addMarker(new MarkerOptions().position(cLocation).title("Current Location").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(museum));
         mMap.setMinZoomPreference(11);
+
+        mMap.setOnInfoWindowClickListener(this);
     }
 
     @Override
@@ -89,6 +95,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 break;
             default:
                 break;
+        }
+    }
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+
+        if(!marker.getTitle().equals("Current Location")){
+
+            // Creating Intent For Navigating to VisitActivity (Explicit Intent)
+            Intent i = new Intent(MapsActivity.this, VisitActivity.class);
+
+            String name = marker.getTitle();
+
+            // Adding values to the intent to pass them to VisitActivity
+            i.putExtra("museumName", name);
+
+            // Once the intent is parametrized, start the VisitActivity:
+            startActivity(i);
         }
     }
 }

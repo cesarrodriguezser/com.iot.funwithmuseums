@@ -244,7 +244,6 @@ public class MainActivity extends AppCompatActivity implements ItemViewHolder.It
 
                     JSONObject locationNode = eachMuseum.getJSONObject("location");
 
-
                     Item item = new Item();
                     item.setDisplayText(museumName);
                     item.setId(Integer.parseInt(eachMuseum.getString("id")));
@@ -266,6 +265,7 @@ public class MainActivity extends AppCompatActivity implements ItemViewHolder.It
             }
 
             Collections.sort(listOfItems, Comparator.comparing(Item::getDisplayText));
+            bNearMuseum.setEnabled(true);
 
         } catch (JSONException e) {
             e.printStackTrace();
