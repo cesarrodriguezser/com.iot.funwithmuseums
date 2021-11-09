@@ -7,6 +7,7 @@
     tools:context=".MainActivity">
 
     <RadioGroup
+        android:id="@+id/radioshow"
         android:layout_width="160dp"
         android:layout_height="147dp"
         android:layout_marginStart="22dp"

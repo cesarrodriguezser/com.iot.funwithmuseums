@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements ItemViewHolder.It
     Button bChart;
     Button bNearMuseum;
 
+    TextView nMuseum;
     TextView tvLoadContent;
 
     String string_result;
@@ -82,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements ItemViewHolder.It
     ViewModel myViewmodel;
 
     double distance = 1000000.0; //In km
+    double calculatedDistance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
