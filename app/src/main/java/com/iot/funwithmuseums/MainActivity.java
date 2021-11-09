@@ -111,10 +111,12 @@ public class MainActivity extends AppCompatActivity implements ItemViewHolder.It
         myRecycleView.setLayoutManager(new LinearLayoutManager(this));
 
         myViewmodel.getAllItems().observe(this, new Observer<List<Item>>() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onChanged(List<Item> items) {
                 listOfItems.clear();
                 listOfItems.addAll(items);
+                Collections.sort(listOfItems, Comparator.comparing(Item::getDisplayText));
                 myAdapter.notifyDataSetChanged();
                 myRecycleView.invalidate();
             }
@@ -264,7 +266,7 @@ public class MainActivity extends AppCompatActivity implements ItemViewHolder.It
                 }
             }
 
-            Collections.sort(listOfItems, Comparator.comparing(Item::getDisplayText));
+
             bNearMuseum.setEnabled(true);
 
         } catch (JSONException e) {
