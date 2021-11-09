@@ -1,6 +1,9 @@
 package com.iot.funwithmuseums;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +17,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.bendaschel.sevensegmentview.SevenSegmentView;
+import com.iot.funwithmuseums.database.ViewModel;
 
 public class VisitActivity extends AppCompatActivity implements SensorEventListener {
 
@@ -25,11 +29,16 @@ public class VisitActivity extends AppCompatActivity implements SensorEventListe
     private SensorManager sensorManager;
     private Sensor stepSensor;
     int steps = 0;
+    private String Mname;
+    ViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_visit);
+
+
+        viewModel = ViewModelProviders.of(this).get(ViewModel.class);
 
         tvName = findViewById(R.id.textView);
         bStart = findViewById(R.id.bStart);
@@ -40,13 +49,13 @@ public class VisitActivity extends AppCompatActivity implements SensorEventListe
         inputIntent = getIntent();
 
         //Getting the Values coming from First Activity extracting them from the Intent received
-        String name = inputIntent.getStringExtra("museumName");
+        Mname = inputIntent.getStringExtra("museumName");
 
         // Get the reference to the sensor manager and the sensor:
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
 
-        tvName.setText(name);
+        tvName.setText(Mname);
     }
 
     public void StartVisit(View view){
@@ -75,15 +84,16 @@ public class VisitActivity extends AppCompatActivity implements SensorEventListe
 
         sensorManager.unregisterListener(VisitActivity.this, stepSensor);
 
-        // Creating Intent For Navigating to ChartActivity (Explicit Intent)
-        Intent i = new Intent(VisitActivity.this, ChartActivity.class);
-
-        // Adding values to the intent to pass them to ChartActivity
-        i.putExtra("stepsMade", steps);
-
-        // Once the intent is parametrized, start the ChartActivity:
-        startActivity(i);
-
+        LiveData<Item> liveData = viewModel.getByName(Mname);
+        liveData.observe(this, new Observer<Item>() {
+            @Override
+            public void onChanged(Item item) {
+                item.setStepAvg(item.getStepAvg() == 0? steps:((item.getStepAvg() + steps)/2));
+                viewModel.UpdateItem(item);
+                liveData.removeObservers(VisitActivity.this);
+                finish();
+            }
+        });
     }
 
     @Override

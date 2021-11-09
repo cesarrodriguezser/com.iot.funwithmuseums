@@ -317,21 +317,26 @@ public class MainActivity extends AppCompatActivity implements ItemViewHolder.It
         lat1 = location.latitude;
         lon1 = location.longitude;
 
-        lat0 = currentLocation.latitude;
-        lon0 = currentLocation.longitude;
+        try {
+            lat0 = currentLocation.latitude;
+            lon0 = currentLocation.longitude;
 
-        //Harversine's Formula to calculate the distance of 2 terrestrial points
-        difLat = lat1 - lat0;
-        difLat = Math.toRadians(difLat);
-        difLon = lon1 - lon0;
-        difLon = Math.toRadians(difLon);
+            //Harversine's Formula to calculate the distance of 2 terrestrial points
+            difLat = lat1 - lat0;
+            difLat = Math.toRadians(difLat);
+            difLon = lon1 - lon0;
+            difLon = Math.toRadians(difLon);
 
-        a = Math.pow(Math.sin(difLat/2), 2) + Math.cos(lat0) * Math.cos(lat1) * Math.pow(Math.sin(difLon/2), 2);
+            a = Math.pow(Math.sin(difLat / 2), 2) + Math.cos(lat0) * Math.cos(lat1) * Math.pow(Math.sin(difLon / 2), 2);
 
-        c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-        double calculatedDistance = 6371000 * c; //In metres
-        return calculatedDistance;
+            double calculatedDistance = 6371000 * c; //In metres
+            return calculatedDistance;
+        }catch (NullPointerException e){
+            Toast.makeText(this,"Unable to get Location", Toast.LENGTH_SHORT).show();
+            return 0;
+        }
     }
 
     @Override

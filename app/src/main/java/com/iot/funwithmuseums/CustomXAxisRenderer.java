@@ -39,9 +39,11 @@ public class CustomXAxisRenderer extends XAxisRenderer {
                         line[i].equals("Real") ||
                         line[i].equals("Nacional")||
                         line[i].equals("y")||
-                        line[i].equals("-"))||
+                        line[i].equals("-")||
                         line[i].equals("al")||
-                        line[i].equals("la")){
+                        line[i].equals("la")||
+                        line[i].equals("La")||
+                        line[i].equals("e"))){
                     cutted[j] = line[i];
                     j++;
                 }

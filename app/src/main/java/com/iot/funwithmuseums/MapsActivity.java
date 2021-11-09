@@ -56,10 +56,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         lat = location.substring(0, location.indexOf(","));
         lon = location.substring(location.indexOf(",")+1);
 
-        currentLocation = currentLocation.substring(10, currentLocation.length()-1);
+        try {
+            currentLocation = currentLocation.substring(10, currentLocation.length() - 1);
 
-        cLat = currentLocation.substring(0, currentLocation.indexOf(","));
-        cLon = currentLocation.substring(currentLocation.indexOf(",")+1);
+            cLat = currentLocation.substring(0, currentLocation.indexOf(","));
+            cLon = currentLocation.substring(currentLocation.indexOf(",") + 1);
+        }catch (NullPointerException e){
+            currentLocation = new String("Couldn't get location");
+        }
 
     }
 
@@ -69,7 +73,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // Add a marker in the museum selected and move the camera
         LatLng museum = new LatLng(Double.valueOf(lat), Double.valueOf(lon));
-        LatLng cLocation = new LatLng(Double.valueOf(cLat), Double.valueOf(cLon));
+        LatLng cLocation;
+        try {
+            cLocation = new LatLng(Double.valueOf(cLat), Double.valueOf(cLon));
+        }catch (NullPointerException e){
+            cLocation = new LatLng(0,0);
+        }
         museumMarker = mMap.addMarker(new MarkerOptions().position(museum).title(name).snippet(distance.substring(0, 7) + "m ->Click here to start the visit<-"));
         currentLocMarker = mMap.addMarker(new MarkerOptions().position(cLocation).title("Current Location").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(museum));
