@@ -150,6 +150,7 @@ public class MainActivity extends AppCompatActivity implements ItemViewHolder.It
                 startActivity(chartgo);
             }
         });
+
         getCurrentLocation();
     }
 
