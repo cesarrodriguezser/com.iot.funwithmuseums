@@ -151,6 +151,14 @@ public class MainActivity extends AppCompatActivity implements ItemViewHolder.It
             }
         });
 
+        bmyMuseums.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent mymuseumsgo= new Intent(MainActivity.this, MQTTActivity.class);
+                startActivity(mymuseumsgo);
+            }
+        });
+
         getCurrentLocation();
     }
 
