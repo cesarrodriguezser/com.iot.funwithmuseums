@@ -19,7 +19,8 @@
         android:theme="@style/Theme.FunWithMuseums">
         <activity
             android:name=".VisitActivity"
-            android:exported="true" />
+            android:exported="true"
+            android:screenOrientation="portrait"/>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
