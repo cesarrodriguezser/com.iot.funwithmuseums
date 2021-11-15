@@ -20,6 +20,7 @@ public class ViewModel extends AndroidViewModel {
     public void InsertItem (Item item){
         repository.InsertItem(item);
     }
+
     public void UpdateItem (Item item){
         repository.UpdateItem(item);
     }

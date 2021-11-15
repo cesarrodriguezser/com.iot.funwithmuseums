@@ -47,13 +47,7 @@ public class ChartActivity extends AppCompatActivity implements RadioGroup.OnChe
 
         myViewmodel = ViewModelProviders.of(this).get(ViewModel.class);
 
-
-
-
         XAxis x = barChart.getXAxis();
-
-
-
 
         x.setPosition(XAxis.XAxisPosition.BOTTOM);
         x.setGranularity(1.0f);

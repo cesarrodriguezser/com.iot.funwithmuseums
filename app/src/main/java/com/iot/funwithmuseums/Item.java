@@ -21,7 +21,7 @@ public class Item {
     private  boolean favorite = false;
 
 
-   public void setDisplayText(String myDisplayText){
+    public void setDisplayText(String myDisplayText){
         this.DisplayText = myDisplayText;
     }
     public String getDisplayText() {
@@ -72,6 +72,12 @@ public class Item {
     boolean isLocationValid() {
         return (myLocation != null);
     }
-    */
+
+     */
+
+
+    public String getTopic() {
+        return DisplayText.toLowerCase().replaceAll("\\s+", "");
+    }
 
 }

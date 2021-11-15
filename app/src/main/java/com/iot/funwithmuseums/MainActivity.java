@@ -111,7 +111,6 @@ public class MainActivity extends AppCompatActivity implements ItemViewHolder.It
         myRecycleView.setLayoutManager(new LinearLayoutManager(this));
 
         myViewmodel.getAllItems().observe(this, new Observer<List<Item>>() {
-            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onChanged(List<Item> items) {
                 listOfItems.clear();
@@ -148,6 +147,13 @@ public class MainActivity extends AppCompatActivity implements ItemViewHolder.It
             public void onClick(View view) {
                 Intent chartgo= new Intent(MainActivity.this, ChartActivity.class);
                 startActivity(chartgo);
+            }
+        });
+        bmyMuseums.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent mymuseumsgo= new Intent(MainActivity.this, MQTTActivity.class);
+                startActivity(mymuseumsgo);
             }
         });
         getCurrentLocation();
@@ -266,7 +272,7 @@ public class MainActivity extends AppCompatActivity implements ItemViewHolder.It
                 }
             }
 
-
+            Collections.sort(listOfItems, Comparator.comparing(Item::getDisplayText));
             bNearMuseum.setEnabled(true);
 
         } catch (JSONException e) {
@@ -319,26 +325,21 @@ public class MainActivity extends AppCompatActivity implements ItemViewHolder.It
         lat1 = location.latitude;
         lon1 = location.longitude;
 
-        try {
-            lat0 = currentLocation.latitude;
-            lon0 = currentLocation.longitude;
+        lat0 = currentLocation.latitude;
+        lon0 = currentLocation.longitude;
 
-            //Harversine's Formula to calculate the distance of 2 terrestrial points
-            difLat = lat1 - lat0;
-            difLat = Math.toRadians(difLat);
-            difLon = lon1 - lon0;
-            difLon = Math.toRadians(difLon);
+        //Harversine's Formula to calculate the distance of 2 terrestrial points
+        difLat = lat1 - lat0;
+        difLat = Math.toRadians(difLat);
+        difLon = lon1 - lon0;
+        difLon = Math.toRadians(difLon);
 
-            a = Math.pow(Math.sin(difLat / 2), 2) + Math.cos(lat0) * Math.cos(lat1) * Math.pow(Math.sin(difLon / 2), 2);
+        a = Math.pow(Math.sin(difLat/2), 2) + Math.cos(lat0) * Math.cos(lat1) * Math.pow(Math.sin(difLon/2), 2);
 
-            c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 
-            double calculatedDistance = 6371000 * c; //In metres
-            return calculatedDistance;
-        }catch (NullPointerException e){
-            Toast.makeText(this,"Unable to get Location", Toast.LENGTH_SHORT).show();
-            return 0;
-        }
+        double calculatedDistance = 6371000 * c; //In metres
+        return calculatedDistance;
     }
 
     @Override
