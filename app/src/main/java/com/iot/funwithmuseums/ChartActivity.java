@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.widget.RadioGroup;
@@ -48,6 +50,9 @@ public class ChartActivity extends AppCompatActivity implements RadioGroup.OnChe
         myViewmodel = ViewModelProviders.of(this).get(ViewModel.class);
 
         XAxis x = barChart.getXAxis();
+        YAxis y = barChart.getAxisLeft();
+
+
 
         x.setPosition(XAxis.XAxisPosition.BOTTOM);
         x.setGranularity(1.0f);
@@ -85,6 +90,20 @@ public class ChartActivity extends AppCompatActivity implements RadioGroup.OnChe
                     }
                 });
                 barChart.setVisibleXRangeMaximum(5);
+
+                switch (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) {
+                    case Configuration.UI_MODE_NIGHT_YES:
+                        x.setTextColor(Color.WHITE);
+                        y.setTextColor(Color.WHITE);
+                        barData.setValueTextColor(Color.WHITE);
+                        break;
+                    case Configuration.UI_MODE_NIGHT_NO:
+                        x.setTextColor(Color.BLACK);
+                        y.setTextColor(Color.BLACK);
+                        barData.setValueTextColor(Color.BLACK);
+                        break;
+                }
+
                 barData.notifyDataChanged();
                 barChart.notifyDataSetChanged();
 
@@ -130,6 +149,18 @@ public class ChartActivity extends AppCompatActivity implements RadioGroup.OnChe
                             }
                         });
                         barChart.setVisibleXRangeMaximum(5);
+                        switch (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) {
+                            case Configuration.UI_MODE_NIGHT_YES:
+                                barChart.getXAxis().setTextColor(Color.WHITE);
+                                barChart.getAxisLeft().setTextColor(Color.WHITE);
+                                barData.setValueTextColor(Color.WHITE);
+                                break;
+                            case Configuration.UI_MODE_NIGHT_NO:
+                                barChart.getXAxis().setTextColor(Color.BLACK);
+                                barChart.getAxisLeft().setTextColor(Color.BLACK);
+                                barData.setValueTextColor(Color.BLACK);
+                                break;
+                        }
                         barData.notifyDataChanged();
                         barChart.notifyDataSetChanged();
 
