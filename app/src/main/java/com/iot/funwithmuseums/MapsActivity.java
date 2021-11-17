@@ -45,7 +45,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //Getting the Intent
         inputIntent = getIntent();
 
-        //Getting the Values coming from First Activity extracting them from the Intent received
+        //Getting the Values coming from Main Activity Activity extracting them from the Intent received
         name = inputIntent.getStringExtra("museumName");
         String location = inputIntent.getStringExtra("location");
         distance = inputIntent.getStringExtra("distance");

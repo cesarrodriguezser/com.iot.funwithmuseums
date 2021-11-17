@@ -68,13 +68,6 @@ public class Item {
     public boolean isFavorite() {
         return favorite;
     }
-    /*
-    boolean isLocationValid() {
-        return (myLocation != null);
-    }
-
-     */
-
 
     public String getTopic() {
         return DisplayText.toLowerCase().replaceAll("\\s+", "");

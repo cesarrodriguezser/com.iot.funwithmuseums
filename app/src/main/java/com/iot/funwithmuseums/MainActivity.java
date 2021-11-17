@@ -66,7 +66,6 @@ public class MainActivity extends AppCompatActivity implements ItemViewHolder.It
     Button bChart;
     Button bNearMuseum;
 
-    TextView nMuseum;
     TextView tvLoadContent;
 
     String string_result;

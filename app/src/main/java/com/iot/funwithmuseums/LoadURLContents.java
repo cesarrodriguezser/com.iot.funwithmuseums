@@ -39,7 +39,6 @@ public class LoadURLContents implements Runnable {
         Bundle msg_data = msg.getData();
 
         String response = ""; // This string will contain the loaded contents of a text resource
-        Bitmap bitmap = null;
         HttpURLConnection urlConnection;
 
         // Build the logTag with the Thread and Class names (to identify logs):

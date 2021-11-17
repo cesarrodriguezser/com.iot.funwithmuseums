@@ -22,7 +22,6 @@ import com.iot.funwithmuseums.database.ViewModel;
 public class VisitActivity extends AppCompatActivity implements SensorEventListener {
 
     TextView tvName;
-    TextView tvSteps;
     Button bStart;
     Button bEnd;
     Intent inputIntent;
@@ -48,7 +47,7 @@ public class VisitActivity extends AppCompatActivity implements SensorEventListe
         //Getting the Intent
         inputIntent = getIntent();
 
-        //Getting the Values coming from First Activity extracting them from the Intent received
+        //Getting the Values coming from Maps Activity extracting them from the Intent received
         Mname = inputIntent.getStringExtra("museumName");
 
         // Get the reference to the sensor manager and the sensor:
